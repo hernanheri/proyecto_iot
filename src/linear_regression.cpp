@@ -2,6 +2,7 @@
 #include <iostream>
 #include <thread>
 #include <vector>
+#include <omp.h>
 
 // ── Predict ──────────────────────────────────
 double LinearRegression::predict(const Sample& s) const {
@@ -87,5 +88,31 @@ void LinearRegression::fit_parallel(const Dataset& ds, int n_threads,
         w1 -= lr * (tot1 / N);
         w2 -= lr * (tot2 / N);
         w3 -= lr * (tot3 / N);
+    }
+}
+
+void LinearRegression::fit_openmp(const Dataset& ds, int n_threads,
+                                   double lr, int epochs) {
+    w0 = w1 = w2 = w3 = 0.0;
+    int N = ds.size();
+
+    for (int e = 0; e < epochs; e++) {
+        double g0=0, g1=0, g2=0, g3=0;
+
+        #pragma omp parallel for num_threads(n_threads) \
+                reduction(+:g0,g1,g2,g3) schedule(static)
+        for (int i = 0; i < N; i++) {
+            const Sample& s = ds.samples[i];
+            double error = predict(s) - s.inTemp;
+            g0 += error;
+            g1 += error * s.inHumid;
+            g2 += error * s.outTemp;
+            g3 += error * s.battery;
+        }
+
+        w0 -= lr * (g0 / N);
+        w1 -= lr * (g1 / N);
+        w2 -= lr * (g2 / N);
+        w3 -= lr * (g3 / N);
     }
 }

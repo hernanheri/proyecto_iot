@@ -18,4 +18,7 @@ struct LinearRegression {
 
     void fit_parallel(const Dataset& ds, int n_threads,
                   double lr = 0.5, int epochs = 500);
+    
+    void fit_openmp(const Dataset& ds, int n_threads,
+                    double lr = 0.5, int epochs = 500);
 };
