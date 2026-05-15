@@ -15,24 +15,6 @@ y OpenMP.
 
 ---
 
-## Estructura del Proyecto
-proyecto_iot/
-├── src/
-│   ├── main.cpp                # Punto de entrada y experimentos
-│   ├── dataset.h / dataset.cpp # Lectura y normalización del CSV
-│   ├── linear_regression.h     # Regresión lineal (seq + paralela)
-│   ├── linear_regression.cpp
-│   ├── timer.h                 # Medición de tiempos
-│   └── Makefile
-├── data/
-│   └── 18DAYSDATA_corrected.csv
-├── results/
-│   ├── resultados.csv
-│   └── grafica_desempeno.png
-├── visualize.py
-└── README.md
-
----
 
 ## Dataset
 
