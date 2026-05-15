@@ -15,4 +15,7 @@ struct LinearRegression {
 
     // Calcula el MSE sobre todo el dataset
     double mse(const Dataset& ds) const;
+
+    void fit_parallel(const Dataset& ds, int n_threads,
+                  double lr = 0.5, int epochs = 500);
 };
