@@ -30,9 +30,9 @@ void LinearRegression::fit(const Dataset& ds, double lr, int epochs) {
         w3 -= lr * grad3 / N;
 
         // Mostrar progreso cada 5 épocas
-        if (e % 5 == 0) {
+        if (e % 50 == 0) {
             std::cout << "Epoca " << e
-                      << "  MSE=" << mse(ds) << "\n";
+                    << "  MSE=" << mse(ds) << "\n";
         }
     }
 }

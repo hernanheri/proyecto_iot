@@ -12,21 +12,33 @@ int main() {
 
     std::cout << "Muestras cargadas: " << ds.size() << "\n\n";
 
-    // Entrenar
+    // Normalizar
+    Scaler sc;
+    sc.fit(ds);
+    std::cout << "Rangos encontrados:\n";
+    std::cout << "  inTemp:  " << sc.inTemp_min  << " a " << sc.inTemp_max  << "\n";
+    std::cout << "  inHumid: " << sc.inHumid_min << " a " << sc.inHumid_max << "\n";
+    std::cout << "  outTemp: " << sc.outTemp_min << " a " << sc.outTemp_max << "\n";
+    std::cout << "  battery: " << sc.battery_min << " a " << sc.battery_max << "\n";
+    Dataset ds_norm;
+    for (const auto& s : ds.samples)
+        ds_norm.samples.push_back(sc.transform(s));
+
+    // Entrenar con datos normalizados
     LinearRegression model;
-    model.fit(ds, 0.0001, 20);
+    model.fit(ds_norm, 0.5, 500);  // lr más grande, más épocas
 
-    // Ver pesos finales
-    std::cout << "\nPesos finales:\n";
-    std::cout << "  w0 (bias)    = " << model.w0 << "\n";
-    std::cout << "  w1 (inHumid) = " << model.w1 << "\n";
-    std::cout << "  w2 (outTemp) = " << model.w2 << "\n";
-    std::cout << "  w3 (battery) = " << model.w3 << "\n";
-
-    // Probar con la primera muestra
-    std::cout << "\nPrueba con muestra 0:\n";
-    std::cout << "  Real:     " << ds.samples[0].inTemp << "\n";
-    std::cout << "  Predicho: " << model.predict(ds.samples[0]) << "\n";
+    // Prueba con las primeras 3 muestras
+    // Desnormalizar predicción para ver en °C reales
+    std::cout << "\nPredicciones vs valores reales:\n";
+    for (int i = 0; i < 5; i++) {
+        double pred_norm = model.predict(ds_norm.samples[i]);
+        // Desnormalizar: volver a escala original
+        double pred_real = pred_norm * (sc.inTemp_max - sc.inTemp_min)
+                           + sc.inTemp_min;
+        std::cout << "  Real: " << ds.samples[i].inTemp
+                  << "°C  Predicho: " << pred_real << "°C\n";
+    }
 
     return 0;
 }
